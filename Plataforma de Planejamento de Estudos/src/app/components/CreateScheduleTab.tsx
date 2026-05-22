@@ -47,87 +47,112 @@ export default function CreateScheduleTab({ onScheduleCreated }: Props) {
 
   const generateSchedule = () => {
     const blocks: StudyBlock[] = [];
-    const times = ['08:00', '10:00', '14:00', '16:00', '19:00', '21:00'];
+    const times = ['07:00', '08:00', '10:00', '14:00', '16:00', '19:00', '21:00'];
     const studyDays = DAYS.filter(day => !freeDays.includes(day));
-
-    // Sort subjects by difficulty (high first)
-    const sortedSubjects = [...subjects].sort((a, b) => {
-      const order = { high: 0, medium: 1, low: 2 };
-      return order[a.difficulty] - order[b.difficulty];
-    });
-
-    let blockId = 0;
-    studyDays.forEach((day, dayIndex) => {
-      const blocksPerDay = Math.floor(hoursPerDay / 2);
-      for (let i = 0; i < blocksPerDay && i < times.length; i++) {
-        const subject = sortedSubjects[blockId % sortedSubjects.length];
-
-        // Add study blocks
-        blocks.push({
-          id: `block-${blockId++}`,
-          day,
-          time: times[i],
-          subject: subject.name,
-          type: 'study',
-          difficulty: subject.difficulty
-        });
-
-        // Add review every 3rd block
-        if (blockId % 3 === 0) {
-          blocks.push({
-            id: `block-${blockId++}`,
-            day,
-            time: times[i + 1] || times[times.length - 1],
-            subject: subject.name,
-            type: 'review',
-            difficulty: subject.difficulty
-          });
-        }
-      }
-
-      // Add essay practice
-      if (dayIndex % 3 === 0 && essayGoal > 0) {
-        blocks.push({
-          id: `block-${blockId++}`,
-          day,
-          time: '20:00',
-          subject: 'Redação',
-          type: 'essay'
-        });
-      }
-
-      // Add exam on weekends
-      if (day === 'Sáb' || day === 'Dom') {
-        blocks.push({
-          id: `block-${blockId++}`,
-          day,
-          time: '09:00',
-          subject: 'Simulado',
-          type: 'exam'
-        });
-      }
-    });
-
-    // Add rest blocks
-    freeDays.forEach(day => {
-      blocks.push({
-        id: `rest-${day}`,
-        day,
-        time: '10:00',
-        subject: 'Descanso',
-        type: 'rest'
-      });
-    });
+    const activeSubjects = subjects
+      .map(subject => ({ ...subject, name: subject.name.trim() }))
+      .filter(subject => subject.name.length > 0);
 
     const config: ScheduleConfig = {
       vestibular,
       hoursPerDay,
       freeDays,
       essayGoal,
-      subjects
+      subjects: activeSubjects
     };
 
-    onScheduleCreated(config, blocks);
+    const restBlocks: StudyBlock[] = freeDays.map(day => ({
+      id: `rest-${day}`,
+      day,
+      time: '10:00',
+      subject: 'Descanso',
+      type: 'rest',
+      durationHours: 0
+    }));
+
+    if (activeSubjects.length === 0 || studyDays.length === 0) {
+      onScheduleCreated(config, restBlocks);
+      return;
+    }
+
+    const difficultyWeight: Record<DifficultyLevel, number> = {
+      high: 3,
+      medium: 2,
+      low: 1
+    };
+    const subjectRotation = activeSubjects.flatMap(subject =>
+      Array.from({ length: difficultyWeight[subject.difficulty] }, () => subject)
+    );
+    const essayCount = Math.min(essayGoal, studyDays.length);
+    const essayDays = new Set(
+      Array.from({ length: essayCount }, (_, index) => studyDays[Math.floor((index * studyDays.length) / essayCount)])
+    );
+
+    let blockId = 0;
+    let subjectIndex = 0;
+    studyDays.forEach(day => {
+      let remainingHours = hoursPerDay;
+      const isWeekend = day === 'Sáb' || day === 'Dom';
+      const hasEssayToday = essayDays.has(day);
+
+      if (isWeekend && remainingHours >= 2) {
+        blocks.push({
+          id: `block-${blockId++}`,
+          day,
+          time: times[0],
+          subject: `${vestibular} - Simulado`,
+          type: 'exam',
+          durationHours: 2
+        });
+        remainingHours -= 2;
+      }
+
+      if (hasEssayToday && remainingHours >= 1) {
+        blocks.push({
+          id: `block-${blockId++}`,
+          day,
+          time: times[isWeekend ? 1 : 0],
+          subject: 'Redação',
+          type: 'essay',
+          durationHours: 1
+        });
+        remainingHours -= 1;
+      }
+
+      const startIndex = (isWeekend ? 1 : 0) + (hasEssayToday ? 1 : 0);
+      for (let i = startIndex; remainingHours > 0 && i < times.length; i++) {
+        const subject = subjectRotation[subjectIndex % subjectRotation.length];
+        const durationHours = Math.min(2, remainingHours);
+
+        blocks.push({
+          id: `block-${blockId++}`,
+          day,
+          time: times[i],
+          subject: subject.name,
+          type: 'study',
+          difficulty: subject.difficulty,
+          durationHours
+        });
+
+        remainingHours -= durationHours;
+        subjectIndex += 1;
+
+        if (subjectIndex % 3 === 0 && remainingHours > 0 && i + 1 < times.length) {
+          blocks.push({
+            id: `block-${blockId++}`,
+            day,
+            time: times[++i],
+            subject: subject.name,
+            type: 'review',
+            difficulty: subject.difficulty,
+            durationHours: 1
+          });
+          remainingHours -= 1;
+        }
+      }
+    });
+
+    onScheduleCreated(config, [...blocks, ...restBlocks]);
   };
 
   const getDifficultyColor = (difficulty: DifficultyLevel) => {

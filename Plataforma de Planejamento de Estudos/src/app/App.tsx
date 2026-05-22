@@ -32,15 +32,41 @@ export interface StudyBlock {
   subject: string;
   type: 'study' | 'review' | 'exam' | 'rest' | 'essay';
   difficulty?: DifficultyLevel;
+  durationHours?: number;
 }
 
+export type ExamScores = Record<string, number>;
+
+type TabValue = 'home' | 'dashboard' | 'create' | 'calendar' | 'progress' | 'final' | 'vlog';
+
 export default function App() {
+  const [activeTab, setActiveTab] = useState<TabValue>('home');
   const [scheduleConfig, setScheduleConfig] = useState<ScheduleConfig | null>(null);
   const [studyBlocks, setStudyBlocks] = useState<StudyBlock[]>([]);
+  const [completedBlockIds, setCompletedBlockIds] = useState<string[]>([]);
+  const [examScores, setExamScores] = useState<ExamScores>({});
+
+  const toggleBlockCompleted = (blockId: string) => {
+    setCompletedBlockIds(prev =>
+      prev.includes(blockId) ? prev.filter(id => id !== blockId) : [...prev, blockId]
+    );
+  };
+
+  const updateExamScore = (blockId: string, score: number | null) => {
+    setExamScores(prev => {
+      const next = { ...prev };
+      if (score === null) {
+        delete next[blockId];
+      } else {
+        next[blockId] = score;
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="size-full bg-slate-50 overflow-auto">
-      <Tabs defaultValue="home" className="w-full h-full flex flex-col">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} className="w-full h-full flex flex-col">
         <div className="bg-white border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between py-4">
@@ -110,7 +136,7 @@ export default function App() {
 
         <div className="flex-1 overflow-auto">
           <TabsContent value="home" className="h-full">
-            <HomeTab />
+            <HomeTab onNavigate={setActiveTab} />
           </TabsContent>
           <TabsContent value="dashboard" className="h-full">
             <DashboardTab scheduleConfig={scheduleConfig} studyBlocks={studyBlocks} />
@@ -120,14 +146,29 @@ export default function App() {
               onScheduleCreated={(config, blocks) => {
                 setScheduleConfig(config);
                 setStudyBlocks(blocks);
+                setCompletedBlockIds([]);
+                setExamScores({});
+                setActiveTab('calendar');
               }}
             />
           </TabsContent>
           <TabsContent value="calendar" className="h-full">
-            <CalendarTab studyBlocks={studyBlocks} />
+            <CalendarTab
+              scheduleConfig={scheduleConfig}
+              studyBlocks={studyBlocks}
+              completedBlockIds={completedBlockIds}
+              examScores={examScores}
+              onToggleBlockCompleted={toggleBlockCompleted}
+              onExamScoreChange={updateExamScore}
+            />
           </TabsContent>
           <TabsContent value="progress" className="h-full">
-            <ProgressTab subjects={scheduleConfig?.subjects || []} />
+            <ProgressTab
+              subjects={scheduleConfig?.subjects || []}
+              studyBlocks={studyBlocks}
+              completedBlockIds={completedBlockIds}
+              examScores={examScores}
+            />
           </TabsContent>
           <TabsContent value="final" className="h-full">
             <FinalStretchTab scheduleConfig={scheduleConfig} />

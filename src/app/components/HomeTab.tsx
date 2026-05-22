@@ -1,6 +1,10 @@
 import { Target, Calendar, TrendingUp, BookOpen, ArrowRight, CheckCircle, Users } from 'lucide-react';
 
-export default function HomeTab() {
+interface HomeTabProps {
+  onNavigate: (tab: 'dashboard' | 'create') => void;
+}
+
+export default function HomeTab({ onNavigate }: HomeTabProps) {
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       <div className="mb-16">
@@ -15,11 +19,19 @@ export default function HomeTab() {
           Organize, acompanhe e otimize sua rotina de estudos com cronogramas personalizados e métricas de progresso
         </p>
         <div className="flex flex-wrap gap-3">
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onNavigate('create')}
+            className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+          >
             Começar Agora
             <ArrowRight size={18} />
           </button>
-          <button className="bg-white text-slate-700 px-6 py-3 rounded-md font-medium border border-slate-300 hover:border-slate-400 transition-colors">
+          <button
+            type="button"
+            onClick={() => onNavigate('dashboard')}
+            className="bg-white text-slate-700 px-6 py-3 rounded-md font-medium border border-slate-300 hover:border-slate-400 transition-colors"
+          >
             Ver Demonstração
           </button>
         </div>
@@ -148,7 +160,11 @@ export default function HomeTab() {
           <p className="text-blue-100 mb-6">
             Crie seu cronograma personalizado agora e organize seus estudos de forma inteligente
           </p>
-          <button className="bg-white text-blue-600 px-8 py-3 rounded-md font-semibold hover:bg-blue-50 transition-colors inline-flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onNavigate('create')}
+            className="bg-white text-blue-600 px-8 py-3 rounded-md font-semibold hover:bg-blue-50 transition-colors inline-flex items-center gap-2"
+          >
             Criar Meu Cronograma
             <ArrowRight size={18} />
           </button>
