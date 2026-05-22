@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CronoVest | Vlog do Projeto</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f5f7ff;
+      color: #222;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+      color: white;
+      padding: 35px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: white;
+      padding: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 25px;
+      background: #eef0ff;
+      color: #4f46e5;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    nav button.active,
+    nav button:hover {
+      background: #4f46e5;
+      color: white;
+    }
+
+    section {
+      display: none;
+      max-width: 1200px;
+      margin: auto;
+      padding: 35px 20px;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      align-items: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      margin-bottom: 22px;
+    }
+
+    .card h2 {
+      color: #4f46e5;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      line-height: 1.7;
+      color: #555;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 18px;
+      background: #4f46e5;
+      color: white;
+      padding: 13px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .mockup {
+      background: linear-gradient(135deg, #eef0ff, #ffffff);
+      border-radius: 25px;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .mockup img {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .steps, .features, .episodes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .step, .feature, .episode {
+      background: white;
+      padding: 22px;
+      border-radius: 22px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+    }
+
+    .step span, .feature span {
+      font-size: 2rem;
+    }
+
+    .video-box {
+      background: #111827;
+      border-radius: 24px;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+
+    .video-screen {
+      height: 280px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      margin-bottom: 18px;
+    }
+
+    .timeline {
+      border-left: 4px solid #4f46e5;
+      padding-left: 20px;
+    }
+
+    .timeline div {
+      background: white;
+      margin-bottom: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+    }
+
+    footer {
+      text-align: center;
+      background: #111827;
+      color: white;
+      padding: 25px;
+      margin-top: 30px;
+    }
+
+    @media(max-width: 600px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      nav button {
+        width: 100%;
+      }
+
+      .video-screen {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>CronoVest</h1>
+    <p>Vlog oficial do projeto de cronograma automático para vestibulares</p>
+  </header>
+
+  <nav>
+    <button class="active" onclick="showTab('inicio', this)">Início</button>
+    <button onclick="showTab('projeto', this)">Sobre o Projeto</button>
+    <button onclick="showTab('vlog', this)">Vlog</button>
+    <button onclick="showTab('bastidores', this)">Bastidores</button>
+    <button onclick="showTab('contato', this)">Contato</button>
+  </nav>
+
+  <section id="inicio" class="active">
+    <div class="hero">
+      <div class="card">
+        <h2>Estude melhor com organização</h2>
+        <p>O CronoVest é uma plataforma criada para ajudar estudantes de vestibular a montar cronogramas automáticos, personalizados e visuais.</p>
+        <a href="#" class="btn" onclick="showTab('vlog', document.querySelectorAll('nav button')[2])">Assistir Vlog</a>
+      </div>
+
+      <div class="mockup">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png" alt="Estudos">
+      </div>
+    </div>
+  </section>
+
+  <section id="projeto">
+    <div class="card">
+      <h2>Sobre o Projeto</h2>
+      <p>O CronoVest permite que o estudante escolha o vestibular, informe sua rotina, defina metas de redação e marque o nível de dificuldade em cada matéria. A partir dessas informações, o sistema cria um cronograma automático com estudos, revisões, simulados e descanso.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <span>🎯</span>
+        <h3>Escolha o vestibular</h3>
+        <p>ENEM, FUVEST, UNICAMP, UNESP ou outro processo seletivo.</p>
+      </div>
+
+      <div class="step">
+        <span>🕒</span>
+        <h3>Informe sua rotina</h3>
+        <p>Horas disponíveis, dias livres e metas semanais.</p>
+      </div>
+
+      <div class="step">
+        <span>📚</span>
+        <h3>Marque dificuldades</h3>
+        <p>Vermelho, amarelo e verde indicam prioridade de estudo.</p>
+      </div>
+
+      <div class="step">
+        <span>📅</span>
+        <h3>Receba o cronograma</h3>
+        <p>O sistema monta uma agenda visual automaticamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="vlog">
+    <div class="video-box">
+      <div class="video-screen">▶</div>
+      <h2>Vlog: Apresentação do CronoVest</h2>
+      <p>Conte aqui a história do projeto, o problema dos estudantes e como a plataforma ajuda na organização dos estudos.</p>
+    </div>
+
+    <div class="episodes">
+      <div class="episode">
+        <h3>Episódio 1</h3>
+        <p>Apresentação da ideia e do problema enfrentado pelos vestibulandos.</p>
+      </div>
+
+      <div class="episode">
+        <h3>Episódio 2</h3>
+        <p>Explicação das funcionalidades principais do CronoVest.</p>
+      </div>
+
+      <div class="episode">
+        <h3>Episódio 3</h3>
+        <p>Demonstração do cronograma automático e calendário visual.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="bastidores">
+    <div class="card">
+      <h2>Bastidores do Projeto</h2>
+      <p>Área destinada para mostrar o processo de criação do site, pesquisas, testes, ideias iniciais e evolução da interface.</p>
+    </div>
+
+    <div class="timeline">
+      <div>
+        <h3>1. Ideia inicial</h3>
+        <p>Criação de uma solução para organizar os estudos de vestibular.</p>
+      </div>
+
+      <div>
+        <h3>2. Pesquisa</h3>
+        <p>Análise das dificuldades dos estudantes e das necessidades do público-alvo.</p>
+      </div>
+
+      <div>
+        <h3>3. Desenvolvimento</h3>
+        <p>Construção da interface, abas, calendário, progresso e modo reta final.</p>
+      </div>
+
+      <div>
+        <h3>4. Apresentação</h3>
+        <p>Uso do vlog para explicar o funcionamento e a importância do projeto.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato">
+    <div class="card">
+      <h2>Contato e Divulgação</h2>
+      <p>Use esta área para colocar o nome da equipe, redes sociais, QR Code do vlog ou link para assistir à apresentação completa.</p>
+      <a href="#" class="btn">Acessar Vlog</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>CronoVest © 2026 | Projeto Escolar</p>
+  </footer>
+
+  <script>
+    function showTab(tabId, button) {
+      document.querySelectorAll("section").forEach(section => {
+        section.classList.remove("active");
+      });
+
+      document.querySelectorAll("nav button").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      document.getElementById(tabId).classList.add("active");
+      button.classList.add("active");
+    }
+  </script>
+
+</body>
+</html>
